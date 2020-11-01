@@ -90,12 +90,10 @@ fn main() {
     let graph = generate_graph(&starting_grid);
     let starting_grid_idx = get_node_idx_by_weight(&graph, &starting_grid).unwrap();
     dbg!(&graph);
+
     println!(
         "{:?}",
         find_solution(&graph, starting_grid_idx)
-            .unwrap()
-            .iter()
-            .map(|x| x.index() as u32)
-            .collect::<Vec<u32>>()
+            .map(|p| p.iter().map(|x| x.index() as u32).collect::<Vec<u32>>())
     );
 }

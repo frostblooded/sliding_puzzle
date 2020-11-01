@@ -44,59 +44,60 @@ fn get_path(
     path
 }
 
-pub fn find_solution(graph: &UnGraph<Grid, ()>, start_idx: NodeIndex) -> Option<Vec<NodeIndex>> {
-    fn f(graph: &UnGraph<Grid, ()>, path_len: u32, current_node: NodeIndex) -> (u32, u32) {
-        let current_grid = graph.node_weight(current_node).unwrap();
-        let heuristic = current_grid.heuristic();
-        (path_len + heuristic, heuristic)
+fn f(graph: &UnGraph<Grid, ()>, path_len: u32, current_node: NodeIndex) -> (u32, u32) {
+    let current_grid = graph.node_weight(current_node).unwrap();
+    let heuristic = current_grid.heuristic();
+    (path_len + heuristic, heuristic)
+}
+
+pub fn find_solution_helper(
+    graph: &UnGraph<Grid, ()>,
+    curr_idx: NodeIndex,
+    depth: u32,
+    f_limit: u32,
+    output_path: &mut Option<Vec<NodeIndex>>,
+) -> bool {
+    let (f_val, h_val) = f(graph, depth, curr_idx);
+
+    if f_val >= f_limit {
+        return false;
     }
 
-    let mut curr_idx;
-    let mut queue: BinaryHeap<State> = BinaryHeap::new();
+    if h_val == 0 {
+        *output_path = Some(vec![curr_idx]);
+        return true;
+    }
 
-    queue.push(State {
-        cost: f(&graph, 0, start_idx).0,
-        idx: start_idx,
-        path_len: 0,
-    });
-
-    let num_nodes = graph.node_indices().len();
-
-    let mut checked: Vec<bool> = vec![false; num_nodes];
-    checked[0] = true;
-    let mut parents: Vec<Option<NodeIndex>> = vec![None; num_nodes];
-
-    while !queue.is_empty() {
-        let curr_state = queue.pop().unwrap();
-        curr_idx = curr_state.idx;
-        dbg!(curr_idx);
-
-        for adj_idx in graph.neighbors(curr_idx) {
-            if checked[adj_idx.index()] {
-                continue;
+    for adj_idx in graph.neighbors(curr_idx) {
+        if find_solution_helper(graph, adj_idx, depth + 1, f_limit, output_path) {
+            if let Some(path) = output_path.as_mut() {
+                path.push(curr_idx);
             }
 
-            dbg!(adj_idx);
-            parents[adj_idx.index()] = Some(curr_idx);
+            return true;
+        }
+    }
 
-            let (f_val, h_val) = f(&graph, curr_state.path_len, adj_idx);
+    false
+}
 
-            // If the heurisitc returns 0, we have found the goal
-            if h_val == 0 {
-                return Some(get_path(&graph, adj_idx, &parents));
-            }
+pub fn find_solution(graph: &UnGraph<Grid, ()>, start_idx: NodeIndex) -> Option<Vec<NodeIndex>> {
+    let mut path: Option<Vec<NodeIndex>> = None;
+    let (mut f_threshold, _) = f(&graph, 0, start_idx);
 
-            queue.push(State {
-                cost: f_val,
-                idx: adj_idx,
-                path_len: curr_state.path_len + 1,
-            });
+    loop {
+        dbg!(f_threshold);
 
-            checked[adj_idx.index()] = true;
+        if find_solution_helper(graph, start_idx, 0, f_threshold, &mut path) {
+            break;
         }
 
-        dbg!(&queue);
+        f_threshold += 1;
     }
 
-    None
+    if let Some(p) = &mut path {
+        p.reverse();
+    }
+
+    path
 }
