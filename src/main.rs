@@ -1,5 +1,5 @@
 mod grid;
-use grid::Grid;
+use grid::{Direction, Grid};
 
 mod ids;
 use ids::find_solution;
@@ -41,36 +41,34 @@ fn input_to_grid() -> Grid {
     Grid::new(grid_side, zero_number, &split_numbers).expect("Couldn't create grid from input")
 }
 
-fn get_node_idx_by_weight(graph: &UnGraph<Grid, ()>, weight: &Grid) -> Option<NodeIndex> {
+fn get_node_idx_by_weight(graph: &UnGraph<Grid, Direction>, weight: &Grid) -> Option<NodeIndex> {
     graph
         .node_indices()
         .find(|x| graph.node_weight(*x).unwrap() == weight)
 }
 
-fn generate_graph(grid: &Grid) -> UnGraph<Grid, ()> {
-    let mut graph: UnGraph<Grid, ()> = UnGraph::new_undirected();
+fn generate_graph(grid: &Grid) -> UnGraph<Grid, Direction> {
+    let mut graph: UnGraph<Grid, Direction> = UnGraph::new_undirected();
     let mut queue = VecDeque::<NodeIndex>::new();
     let mut curr_idx = graph.add_node(grid.clone());
 
     loop {
-        for adj in graph
-            .node_weight(curr_idx)
-            .unwrap()
-            .generate_adjacent_grids()
-        {
+        let curr_grid = graph.node_weight(curr_idx).unwrap();
+
+        for (adj, dir) in curr_grid.generate_adjacent_grids() {
             // See if this node is already in the graph
             if let Some(adj_idx) = get_node_idx_by_weight(&graph, &adj) {
                 // Add an edge from the current node to the adjacent node
                 // if one doesn't exist yet.
                 if !graph.contains_edge(curr_idx, adj_idx) {
-                    graph.add_edge(curr_idx, adj_idx, ());
+                    graph.add_edge(curr_idx, adj_idx, dir);
                 }
 
                 continue;
             } else {
                 // Just add the node to the graph
                 let adj_idx = graph.add_node(adj);
-                graph.add_edge(curr_idx, adj_idx, ());
+                graph.add_edge(curr_idx, adj_idx, dir);
                 queue.push_back(adj_idx);
             }
         }
@@ -91,9 +89,5 @@ fn main() {
     let starting_grid_idx = get_node_idx_by_weight(&graph, &starting_grid).unwrap();
     dbg!(&graph);
 
-    println!(
-        "{:?}",
-        find_solution(&graph, starting_grid_idx)
-            .map(|p| p.iter().map(|x| x.index() as u32).collect::<Vec<u32>>())
-    );
+    println!("{:?}", find_solution(&graph, starting_grid_idx));
 }

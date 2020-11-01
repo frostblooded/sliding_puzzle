@@ -1,6 +1,5 @@
-use crate::grid::Grid;
+use crate::grid::{Direction, Grid};
 use std::cmp::{Ord, Ordering};
-use std::collections::{BinaryHeap, VecDeque};
 
 use petgraph::graph::NodeIndex;
 use petgraph::graph::UnGraph;
@@ -44,18 +43,18 @@ fn get_path(
     path
 }
 
-fn f(graph: &UnGraph<Grid, ()>, path_len: u32, current_node: NodeIndex) -> (u32, u32) {
+fn f(graph: &UnGraph<Grid, Direction>, path_len: u32, current_node: NodeIndex) -> (u32, u32) {
     let current_grid = graph.node_weight(current_node).unwrap();
     let heuristic = current_grid.heuristic();
     (path_len + heuristic, heuristic)
 }
 
 pub fn find_solution_helper(
-    graph: &UnGraph<Grid, ()>,
+    graph: &UnGraph<Grid, Direction>,
     curr_idx: NodeIndex,
     depth: u32,
     f_limit: u32,
-    output_path: &mut Option<Vec<NodeIndex>>,
+    output_path: &mut Option<Vec<(Direction, NodeIndex)>>,
 ) -> bool {
     let (f_val, h_val) = f(graph, depth, curr_idx);
 
@@ -64,14 +63,15 @@ pub fn find_solution_helper(
     }
 
     if h_val == 0 {
-        *output_path = Some(vec![curr_idx]);
+        *output_path = Some(vec![]);
         return true;
     }
 
     for adj_idx in graph.neighbors(curr_idx) {
         if find_solution_helper(graph, adj_idx, depth + 1, f_limit, output_path) {
             if let Some(path) = output_path.as_mut() {
-                path.push(curr_idx);
+                let edge_idx = graph.find_edge(curr_idx, adj_idx).unwrap();
+                path.push((graph.edge_weight(edge_idx).unwrap().clone(), adj_idx));
             }
 
             return true;
@@ -81,8 +81,11 @@ pub fn find_solution_helper(
     false
 }
 
-pub fn find_solution(graph: &UnGraph<Grid, ()>, start_idx: NodeIndex) -> Option<Vec<NodeIndex>> {
-    let mut path: Option<Vec<NodeIndex>> = None;
+pub fn find_solution(
+    graph: &UnGraph<Grid, Direction>,
+    start_idx: NodeIndex,
+) -> Option<Vec<(Direction, NodeIndex)>> {
+    let mut path = None;
     let (mut f_threshold, _) = f(&graph, 0, start_idx);
 
     loop {
