@@ -1,9 +1,11 @@
 mod grid;
 
 use grid::Grid;
+use std::collections::VecDeque;
 use std::io::stdin;
 
-use petgraph::graph::Graph;
+use petgraph::graph::NodeIndex;
+use petgraph::graph::UnGraph;
 
 fn input_to_grid() -> (Grid, i32) {
     let mut buf = String::new();
@@ -39,10 +41,52 @@ fn input_to_grid() -> (Grid, i32) {
     )
 }
 
+fn get_node_idx_by_weight(graph: &UnGraph<Grid, ()>, weight: &Grid) -> Option<NodeIndex> {
+    graph
+        .node_indices()
+        .find(|x| graph.node_weight(*x).unwrap() == weight)
+}
+
+fn generate_graph(grid: &Grid) -> UnGraph<Grid, ()> {
+    let mut graph: UnGraph<Grid, ()> = UnGraph::new_undirected();
+    let mut queue = VecDeque::<NodeIndex>::new();
+    let mut curr_idx = graph.add_node(grid.clone());
+
+    loop {
+        for adj in graph
+            .node_weight(curr_idx)
+            .unwrap()
+            .generate_adjacent_grids()
+        {
+            // See if this node is already in the graph
+            if let Some(adj_idx) = get_node_idx_by_weight(&graph, &adj) {
+                // Add an edge from the current node to the adjacent node
+                // if one doesn't exist yet.
+                if !graph.contains_edge(curr_idx, adj_idx) {
+                    graph.add_edge(curr_idx, adj_idx, ());
+                }
+
+                continue;
+            } else {
+                // Just add the node to the graph
+                let adj_idx = graph.add_node(adj);
+                graph.add_edge(curr_idx, adj_idx, ());
+                queue.push_back(adj_idx);
+            }
+        }
+
+        if queue.is_empty() {
+            break;
+        }
+
+        curr_idx = queue.pop_front().unwrap();
+    }
+
+    graph
+}
+
 fn main() {
     let (grid, zero_number) = input_to_grid();
-    let mut graph = Graph::<Grid, ()>::new();
-    graph.add_node(grid);
-
+    let graph = generate_graph(&grid);
     println!("{:?}", graph);
 }

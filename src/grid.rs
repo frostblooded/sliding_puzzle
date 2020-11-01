@@ -1,4 +1,7 @@
-#[derive(Debug, PartialEq, Clone)]
+use std::fmt;
+use std::fmt::Debug;
+
+#[derive(PartialEq, Clone)]
 pub struct Grid {
     data: Vec<u32>,
     grid_side: u32,
@@ -27,20 +30,6 @@ impl Grid {
 
     pub fn get(&self, x: u32, y: u32) -> Option<&u32> {
         self.data.get((x * self.grid_side + y) as usize)
-    }
-
-    pub fn get_mut(&mut self, x: u32, y: u32) -> Option<&mut u32> {
-        self.data.get_mut((x * self.grid_side + y) as usize)
-    }
-
-    // Doesn't include the zero number
-    pub fn len(&self) -> u32 {
-        self.grid_side * self.grid_side - 1
-    }
-
-    // Includes the zero number
-    pub fn total_len(&self) -> u32 {
-        self.grid_side * self.grid_side
     }
 
     pub fn current_zero_position(&self) -> (u32, u32) {
@@ -88,5 +77,27 @@ impl Grid {
         }
 
         results
+    }
+}
+
+impl Debug for Grid {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        let mut string = String::new();
+
+        for i in 0..self.grid_side {
+            let mut row_numbers = vec![];
+
+            for j in 0..self.grid_side {
+                row_numbers.push(self.get(i, j).unwrap().to_string());
+            }
+
+            string.push_str(&row_numbers.join(","));
+
+            if i < self.grid_side - 1 {
+                string.push('\n');
+            }
+        }
+
+        write!(formatter, "\nGrid: [\n{}\n]\n", string)
     }
 }
