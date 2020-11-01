@@ -1,13 +1,16 @@
 mod grid;
-
 use grid::Grid;
+
+mod ids;
+use ids::find_solution;
+
 use std::collections::VecDeque;
 use std::io::stdin;
 
 use petgraph::graph::NodeIndex;
 use petgraph::graph::UnGraph;
 
-fn input_to_grid() -> (Grid, i32) {
+fn input_to_grid() -> Grid {
     let mut buf = String::new();
 
     stdin()
@@ -35,10 +38,7 @@ fn input_to_grid() -> (Grid, i32) {
         .map(|x| x.parse().expect("Couldn't parse input as number"))
         .collect();
 
-    (
-        Grid::new(grid_side, &split_numbers).expect("Couldn't create grid from input"),
-        zero_number,
-    )
+    Grid::new(grid_side, zero_number, &split_numbers).expect("Couldn't create grid from input")
 }
 
 fn get_node_idx_by_weight(graph: &UnGraph<Grid, ()>, weight: &Grid) -> Option<NodeIndex> {
@@ -86,7 +86,16 @@ fn generate_graph(grid: &Grid) -> UnGraph<Grid, ()> {
 }
 
 fn main() {
-    let (grid, zero_number) = input_to_grid();
-    let graph = generate_graph(&grid);
-    println!("{:?}", graph);
+    let starting_grid = input_to_grid();
+    let graph = generate_graph(&starting_grid);
+    let starting_grid_idx = get_node_idx_by_weight(&graph, &starting_grid).unwrap();
+    dbg!(&graph);
+    println!(
+        "{:?}",
+        find_solution(&graph, starting_grid_idx)
+            .unwrap()
+            .iter()
+            .map(|x| x.index() as u32)
+            .collect::<Vec<u32>>()
+    );
 }

@@ -5,10 +5,11 @@ use std::fmt::Debug;
 pub struct Grid {
     data: Vec<u32>,
     grid_side: u32,
+    zero_number: i32,
 }
 
 impl Grid {
-    pub fn new(grid_side: u32, input: &Vec<u32>) -> Option<Self> {
+    pub fn new(grid_side: u32, zero_number: i32, input: &Vec<u32>) -> Option<Self> {
         let mut grid_data = Vec::new();
 
         for i in 0..grid_side {
@@ -20,12 +21,13 @@ impl Grid {
         Some(Grid {
             data: grid_data,
             grid_side,
+            zero_number: zero_number,
         })
     }
 
-    pub fn from_vec(input: &Vec<u32>) -> Option<Self> {
+    pub fn from_vec(zero_number: i32, input: &Vec<u32>) -> Option<Self> {
         let grid_side = (input.len() as f32).sqrt().ceil() as u32;
-        Grid::new(grid_side, input)
+        Grid::new(grid_side, zero_number, input)
     }
 
     pub fn get(&self, x: u32, y: u32) -> Option<&u32> {
@@ -78,6 +80,41 @@ impl Grid {
 
         results
     }
+
+    pub fn linear_pos_to_matrix_pos(&self, pos: u32) -> (u32, u32) {
+        let x = pos / self.grid_side;
+        let y = pos % self.grid_side;
+        (x, y)
+    }
+
+    pub fn expected_pos(&self, val: &u32) -> (u32, u32) {
+        let expected_idx = if *val == 0 {
+            if self.zero_number >= 0 {
+                self.zero_number as u32 - 1
+            } else {
+                // Zero number is -1
+                self.data.len() as u32 - 1
+            }
+        } else {
+            val - 1
+        };
+
+        self.linear_pos_to_matrix_pos(expected_idx)
+    }
+
+    pub fn heuristic_for_index(&self, idx: u32) -> u32 {
+        let (current_x, current_y) = self.linear_pos_to_matrix_pos(idx);
+        let (expected_x, expected_y) = self.expected_pos(self.data.get(idx as usize).unwrap());
+
+        ((current_x as i32 - expected_x as i32).abs() + (current_y as i32 - expected_y as i32))
+            .abs() as u32
+    }
+
+    pub fn heuristic(&self) -> u32 {
+        (0..self.data.len())
+            .map(|i| self.heuristic_for_index(i as u32))
+            .sum()
+    }
 }
 
 impl Debug for Grid {
@@ -91,6 +128,7 @@ impl Debug for Grid {
                 row_numbers.push(self.get(i, j).unwrap().to_string());
             }
 
+            string.push_str("  ");
             string.push_str(&row_numbers.join(","));
 
             if i < self.grid_side - 1 {
@@ -98,6 +136,6 @@ impl Debug for Grid {
             }
         }
 
-        write!(formatter, "\nGrid: [\n{}\n]\n", string)
+        write!(formatter, "Grid: [\n{}\n]", string)
     }
 }
