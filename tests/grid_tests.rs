@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn test_generating_adjacents() {
         let grid = Grid::from_vec(-1, &vec![1, 2, 3, 0]).unwrap();
-        let adjacents = grid.generate_adjacent_grids();
+        let adjacents = grid.generate_neighbors();
         let expected_adjacents = grids(vec![
             (vec![1, 2, 0, 3], Direction::Right),
             (vec![1, 0, 3, 2], Direction::Down),
@@ -23,7 +23,7 @@ mod tests {
         assert_eq!(adjacents, expected_adjacents);
 
         let grid = Grid::from_vec(-1, &vec![0, 2, 3, 1]).unwrap();
-        let adjacents = grid.generate_adjacent_grids();
+        let adjacents = grid.generate_neighbors();
         let expected_adjacents = grids(vec![
             (vec![2, 0, 3, 1], Direction::Left),
             (vec![3, 2, 0, 1], Direction::Up),
@@ -31,7 +31,7 @@ mod tests {
         assert_eq!(adjacents, expected_adjacents);
 
         let grid = Grid::from_vec(-1, &vec![1, 0, 3, 4, 5, 6, 7, 8, 2]).unwrap();
-        let adjacents = grid.generate_adjacent_grids();
+        let adjacents = grid.generate_neighbors();
         let expected_adjacents = grids(vec![
             (vec![0, 1, 3, 4, 5, 6, 7, 8, 2], Direction::Right),
             (vec![1, 3, 0, 4, 5, 6, 7, 8, 2], Direction::Left),
