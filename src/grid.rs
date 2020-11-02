@@ -20,7 +20,7 @@ impl fmt::Display for Direction {
     }
 }
 
-#[derive(PartialEq, Clone)]
+#[derive(Hash, Eq, PartialEq, Clone)]
 pub struct Grid {
     data: Vec<u32>,
     grid_side: u32,
