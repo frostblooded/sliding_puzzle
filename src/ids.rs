@@ -1,35 +1,12 @@
 use crate::graph_builder::GraphBuilder;
 use crate::grid::{Direction, Grid};
 
-use std::cmp::{Ord, Ordering};
 use std::collections::HashSet;
 
 use petgraph::graph::NodeIndex;
 use petgraph::graph::UnGraph;
 
-#[derive(Debug, Eq, PartialEq)]
-struct State {
-    cost: u32,
-    idx: NodeIndex,
-    path_len: u32,
-}
-
-impl Ord for State {
-    fn cmp(&self, other: &State) -> Ordering {
-        other
-            .cost
-            .cmp(&self.cost)
-            .then_with(|| other.idx.cmp(&self.idx))
-    }
-}
-
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &State) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-fn f(graph: &UnGraph<Grid, Direction>, path_len: u32, current_node: NodeIndex) -> (u32, u32) {
+fn f(graph: &UnGraph<Grid, Direction>, path_len: u16, current_node: NodeIndex) -> (u16, u16) {
     let current_grid = graph.node_weight(current_node).unwrap();
     let heuristic = current_grid.heuristic();
     (path_len + heuristic, heuristic)
@@ -38,8 +15,8 @@ fn f(graph: &UnGraph<Grid, Direction>, path_len: u32, current_node: NodeIndex) -
 pub fn find_solution_helper(
     graph_builder: &mut GraphBuilder,
     curr_idx: NodeIndex,
-    depth: u32,
-    f_limit: u32,
+    depth: u16,
+    f_limit: u16,
     used: &mut HashSet<NodeIndex>,
     output_path: &mut Option<Vec<(Direction, NodeIndex)>>,
 ) -> bool {

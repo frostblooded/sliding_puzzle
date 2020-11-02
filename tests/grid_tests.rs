@@ -2,7 +2,7 @@
 mod tests {
     use sliding_puzzle::grid::{Direction, Grid};
 
-    fn grids(vectors: Vec<(Vec<u32>, Direction)>) -> Vec<(Grid, Direction)> {
+    fn grids(vectors: Vec<(Vec<u8>, Direction)>) -> Vec<(Grid, Direction)> {
         let mut res = vec![];
 
         for (v, d) in vectors {
