@@ -1,10 +1,5 @@
-use crate::grid::{Direction, Grid};
+use crate::grid::Grid;
 use crate::ids;
-
-use std::collections::{HashMap, VecDeque};
-
-use petgraph::graph::NodeIndex;
-use petgraph::graph::UnGraph;
 
 pub struct Solver {}
 
@@ -32,13 +27,6 @@ impl Solver {
             .collect();
 
         Grid::new(grid_side, zero_number, &split_numbers).expect("Couldn't create grid from input")
-    }
-
-    fn get_node_idx_by_weight(
-        weight_idx_hash: &HashMap<Grid, NodeIndex>,
-        weight: &Grid,
-    ) -> Option<NodeIndex> {
-        weight_idx_hash.get(weight).map(|x| x.clone())
     }
 
     pub fn solve(input: &str) -> String {

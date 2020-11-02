@@ -31,10 +31,6 @@ impl Grid {
     pub fn new(grid_side: u32, zero_number: i32, input: &Vec<u32>) -> Option<Self> {
         let mut grid_data = Vec::new();
 
-        dbg!(grid_side);
-        dbg!(zero_number);
-        dbg!(input);
-
         for i in 0..grid_side {
             for j in 0..grid_side {
                 grid_data.push(*input.get((i * grid_side + j) as usize)?);
