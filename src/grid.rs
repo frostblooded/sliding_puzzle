@@ -85,7 +85,7 @@ impl Grid {
         new_grid
     }
 
-    pub fn generate_adjacent_grids(&self) -> Vec<(Grid, Direction)> {
+    pub fn generate_neighbors(&mut self) -> Vec<(Grid, Direction)> {
         let mut results: Vec<(Grid, Direction)> = vec![];
         let (x, y) = self.current_zero_position();
 
