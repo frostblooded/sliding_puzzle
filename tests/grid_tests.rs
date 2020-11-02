@@ -3,10 +3,6 @@ mod tests {
     use sliding_puzzle::grid::{Direction, Grid};
 
     fn grids(vectors: Vec<(Vec<u32>, Direction)>) -> Vec<(Grid, Direction)> {
-        vectors
-            .iter()
-            .map(|(v, d)| (Grid::from_vec(-1, v).unwrap(), d));
-
         let mut res = vec![];
 
         for (v, d) in vectors {

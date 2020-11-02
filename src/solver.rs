@@ -140,7 +140,6 @@ impl Solver {
             .iter()
             .map(|(d, _)| d.to_string())
             .collect::<Vec<String>>();
-
         format!(
             "{}\n{}",
             direction_strings.len(),

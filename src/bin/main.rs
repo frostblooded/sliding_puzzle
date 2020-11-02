@@ -2,9 +2,7 @@ use sliding_puzzle::solver::Solver;
 
 use std::io::stdin;
 
-fn main() {
-    //simple_logger::init().expect("Failed to initialize simple_logger");
-
+fn gather_input() -> String {
     let mut buf = String::new();
 
     stdin()
@@ -23,5 +21,10 @@ fn main() {
             .expect("Couldn't read from stdin");
     }
 
-    println!("{}", Solver::solve(&buf));
+    buf
+}
+
+fn main() {
+    //simple_logger::init().expect("Failed to initialize simple_logger");
+    println!("{}", Solver::solve(&gather_input()));
 }

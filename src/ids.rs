@@ -26,23 +26,6 @@ impl PartialOrd for State {
     }
 }
 
-fn get_path(
-    graph: &UnGraph<Grid, ()>,
-    end_idx: NodeIndex,
-    parents: &Vec<Option<NodeIndex>>,
-) -> Vec<NodeIndex> {
-    let mut path = vec![end_idx];
-    let mut curr_idx = end_idx;
-
-    while let Some(parent_idx) = parents[curr_idx.index()] {
-        path.push(parent_idx);
-        curr_idx = parent_idx;
-    }
-
-    path.reverse();
-    path
-}
-
 fn f(graph: &UnGraph<Grid, Direction>, path_len: u32, current_node: NodeIndex) -> (u32, u32) {
     let current_grid = graph.node_weight(current_node).unwrap();
     let heuristic = current_grid.heuristic();
