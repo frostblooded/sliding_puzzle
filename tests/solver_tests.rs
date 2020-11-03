@@ -27,6 +27,6 @@ mod tests {
             6 0 1
             8 7 2";
         let solution = Solver::solve(input);
-        assert_eq!(solution, "22\nleft down right up right up left down right down left left up up right down left down right up left up");
+        assert_eq!(solution, "22\nright up left down left down right up right down left left up up right down left down right up left up");
     }
 }
