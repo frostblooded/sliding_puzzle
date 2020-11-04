@@ -150,6 +150,33 @@ impl Grid {
             .map(|i| self.heuristic_for_index(i as u8) as u16)
             .sum()
     }
+
+    pub fn is_unsolvable(&self) -> bool {
+        let mut inversions = 0;
+
+        for i in 0..self.data.len() {
+            if self.data[i] == 0 {
+                continue;
+            }
+
+            for j in (i + 1)..self.data.len() {
+                if self.data[j] == 0 {
+                    continue;
+                }
+
+                if self.data[i] > self.data[j] {
+                    inversions += 1;
+                }
+            }
+        }
+
+        if self.grid_side % 2 == 0 {
+            let (_, zero_y) = self.current_zero_position();
+            (inversions + zero_y) % 2 == 0
+        } else {
+            inversions % 2 == 1
+        }
+    }
 }
 
 impl Debug for Grid {

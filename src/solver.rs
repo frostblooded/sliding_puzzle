@@ -31,6 +31,11 @@ impl Solver {
 
     pub fn solve(input: &str) -> String {
         let starting_grid = Solver::input_to_grid(input);
+
+        if starting_grid.is_unsolvable() {
+            return "No solution".to_string();
+        }
+
         let direction_strings = ids::find_solution(starting_grid)
             .unwrap()
             .iter()
