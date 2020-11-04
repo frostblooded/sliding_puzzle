@@ -10,7 +10,7 @@ mod tests {
             3 1
             2 0";
         let solution = Solver::solve(input);
-        assert_eq!(solution, "4\nright down left up");
+        assert_eq!(solution, "4\nright\ndown\nleft\nup");
 
         // 3x3
         let input = "8
@@ -27,6 +27,6 @@ mod tests {
             6 0 1
             8 7 2";
         let solution = Solver::solve(input);
-        assert_eq!(solution, "22\nright up left down left down right up right down left left up up right down left down right up left up");
+        assert_eq!(solution, "22\nright\nup\nleft\ndown\nleft\ndown\nright\nup\nright\ndown\nleft\nleft\nup\nup\nright\ndown\nleft\ndown\nright\nup\nleft\nup");
     }
 }

@@ -44,7 +44,7 @@ impl Solver {
         format!(
             "{}\n{}",
             direction_strings.len(),
-            direction_strings.join(" ")
+            direction_strings.join("\n")
         )
     }
 }
