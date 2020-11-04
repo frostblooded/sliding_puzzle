@@ -54,8 +54,6 @@ pub fn find_solution(start_grid: Grid) -> Option<Vec<(Direction, Grid)>> {
     let mut used: HashSet<Grid> = HashSet::new();
 
     loop {
-        dbg!(f_threshold);
-
         if find_solution_helper(&start_grid, 0, f_threshold, &mut used, &mut path) {
             break;
         }
