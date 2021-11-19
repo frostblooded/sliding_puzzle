@@ -7,14 +7,14 @@ fn f(grid: &Grid, path_len: u16) -> (u16, u16) {
     (path_len + heuristic, heuristic)
 }
 
-pub fn find_solution_helper<'a>(
+pub fn find_solution_helper(
     grid: &Grid,
     depth: u16,
     f_limit: u16,
     used: &mut HashSet<Grid>,
     output_path: &mut Option<Vec<(Direction, Grid)>>,
 ) -> bool {
-    let (f_val, h_val) = f(&grid, depth);
+    let (f_val, h_val) = f(grid, depth);
     let mut found_goal = false;
     used.insert(grid.clone());
 
@@ -44,7 +44,7 @@ pub fn find_solution_helper<'a>(
         }
     };
 
-    used.remove(&grid);
+    used.remove(grid);
     found_goal
 }
 

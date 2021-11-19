@@ -28,7 +28,7 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn new(grid_side: u8, zero_number: i8, input: &Vec<u8>) -> Option<Self> {
+    pub fn new(grid_side: u8, zero_number: i8, input: &[u8]) -> Option<Self> {
         let mut grid_data = Vec::new();
 
         for i in 0..grid_side {
@@ -40,11 +40,11 @@ impl Grid {
         Some(Grid {
             data: grid_data,
             grid_side,
-            zero_number: zero_number,
+            zero_number,
         })
     }
 
-    pub fn from_vec(zero_number: i8, input: &Vec<u8>) -> Option<Self> {
+    pub fn from_vec(zero_number: i8, input: &[u8]) -> Option<Self> {
         let grid_side = (input.len() as f32).sqrt().ceil() as u8;
         Grid::new(grid_side, zero_number, input)
     }
